@@ -1,0 +1,72 @@
+---
+# 서비스
+apiVersion: v1
+kind: Service
+metadata:
+  name: ktcloud-svc
+spec:
+  selector:
+    color: green    # 무슨 라벨이 부착된 파드로 포워딩할것인가?
+  ports:
+  - port: 80
+    targetPort: 80
+  type: LoadBalancer
+
+
+---
+# deployment : blue
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ktcloud-blue
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      color: blue
+  template:
+    metadata:
+      labels:
+        color: blue
+    spec:
+      containers:
+      - name: ktcloudctn-blue
+        image: brian24/ktcloudinfra:blue
+        resources:
+          limits:    # limits(최대)/requests(최소보장)
+            memory: "64Mi"
+            cpu: "500m"    # 1000m 이 1개 cpu
+        ports:
+        - containerPort: 80   # nginx 포트 번호
+
+
+---
+# deploymnet : green
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ktcloud-green
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      color: green
+  template:
+    metadata:
+      labels:
+        color: green
+    spec:
+      containers:
+      - name: ktcloudctn-green
+        image: brian24/ktcloudinfra:green
+        resources:
+          limits:    # limits(최대)/requests(최소보장)
+            memory: "64Mi"
+            cpu: "500m"    # 1000m 이 1개 cpu
+        ports:
+        - containerPort: 80   # nginx 포트 번호
+
+
+
+
+
